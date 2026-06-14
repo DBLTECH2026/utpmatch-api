@@ -75,10 +75,14 @@ class DemoUserSeeder extends Seeder
         );
 
         // --- Asesor y Admin (para demostrar RBAC) ---
-        User::updateOrCreate(
+        $asesor = User::updateOrCreate(
             ['email' => 'asesor@utp.edu.pe'],
-            ['name' => 'Jorge Ramos', 'password' => Hash::make('Utp+Match2026!'), 'rol' => 'asesor']
+            ['name' => 'Jaime Madrid', 'password' => Hash::make('Utp+Match2026!'), 'rol' => 'asesor']
         );
+
+        // Vincular el usuario asesor con su registro en la tabla advisors.
+        \App\Models\Advisor::where('nombre', 'Jaime Madrid')
+            ->update(['user_id' => $asesor->id]);
 
         User::updateOrCreate(
             ['email' => 'admin@utp.edu.pe'],
