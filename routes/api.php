@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\CopilotController;
 use App\Http\Controllers\Api\V1\CvController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\MatchController;
+use App\Http\Controllers\Api\V1\OnboardingController;
 use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\RouteController;
 use Illuminate\Support\Facades\Route;
@@ -45,6 +46,9 @@ Route::prefix('v1')->group(function () {
         // Perfil 360 (del usuario autenticado)
         Route::get('profile',  [ProfileController::class, 'show']);
         Route::put('profile',  [ProfileController::class, 'update']);
+
+        // Onboarding (wizard "¿qué quieres ser?")
+        Route::post('onboarding/suggest', [OnboardingController::class, 'suggest']);
 
         // Dashboard (resumen del viaje)
         Route::get('dashboard', [DashboardController::class, 'index']);

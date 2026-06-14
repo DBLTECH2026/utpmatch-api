@@ -21,12 +21,20 @@ class Profile extends Model
         'headline',
         'about',
         'empleabilidad_score',
+        'autopercepcion',
+        'intereses',
+        'fortalezas',
+        'onboarding_visto',
     ];
 
     protected function casts(): array
     {
         return [
             'empleabilidad_score' => 'integer',
+            'autopercepcion'      => 'array',
+            'intereses'           => 'array',
+            'fortalezas'          => 'array',
+            'onboarding_visto'    => 'boolean',
         ];
     }
 

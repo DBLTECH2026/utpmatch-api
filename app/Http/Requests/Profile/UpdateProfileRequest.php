@@ -23,9 +23,16 @@ class UpdateProfileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'rol_objetivo' => ['sometimes', 'nullable', 'string', 'max:120'],
-            'headline'     => ['sometimes', 'nullable', 'string', 'max:160'],
-            'about'        => ['sometimes', 'nullable', 'string', 'max:2000'],
+            'rol_objetivo'     => ['sometimes', 'nullable', 'string', 'max:120'],
+            'headline'         => ['sometimes', 'nullable', 'string', 'max:160'],
+            'about'            => ['sometimes', 'nullable', 'string', 'max:2000'],
+            'autopercepcion'   => ['sometimes', 'nullable', 'array'],
+            'autopercepcion.*' => ['string', 'max:80'],
+            'intereses'        => ['sometimes', 'nullable', 'array'],
+            'intereses.*'      => ['string', 'max:80'],
+            'fortalezas'       => ['sometimes', 'nullable', 'array'],
+            'fortalezas.*'     => ['string', 'max:80'],
+            'onboarding_visto' => ['sometimes', 'boolean'],
         ];
     }
 }

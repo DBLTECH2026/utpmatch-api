@@ -2,6 +2,8 @@
 
 namespace App\Support;
 
+use Illuminate\Support\Str;
+
 /**
  * CareerCatalog — Catálogo cerrado de carreras → roles objetivo.
  *
@@ -106,6 +108,37 @@ final class CareerCatalog
     public static function roles(string $carrera): array
     {
         return array_keys(self::CARRERAS[$carrera] ?? []);
+    }
+
+    /**
+     * Mapea un texto libre de meta al rol del catálogo más parecido de la carrera.
+     * Orden: match normalizado exacto → substring (cualquier sentido) → null.
+     * Devuelve null si la carrera no existe o no hay parecido razonable. Se usa
+     * para que una meta escrita a mano apunte a una demanda real (role_skills).
+     */
+    public static function resolveRole(?string $carrera, string $text): ?string
+    {
+        $roles = self::roles($carrera ?? '');
+        if (empty($roles)) {
+            return null;
+        }
+
+        $norm = static fn (string $s): string => Str::lower(Str::ascii(trim($s)));
+        $t = $norm($text);
+
+        foreach ($roles as $r) {
+            if ($norm($r) === $t) {
+                return $r;
+            }
+        }
+        foreach ($roles as $r) {
+            $nr = $norm($r);
+            if ($nr !== '' && (str_contains($nr, $t) || str_contains($t, $nr))) {
+                return $r;
+            }
+        }
+
+        return null;
     }
 
     /** Estructura para el front: [{carrera, roles:[...]}, ...]. */

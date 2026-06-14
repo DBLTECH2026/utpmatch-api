@@ -27,8 +27,13 @@ class GapRouteService
      */
     public function computeGaps(Profile $profile, string $rol): array
     {
+        // Mapea metas escritas a mano al rol del catálogo más parecido (la
+        // demanda vive por nombre de rol del catálogo). Si no hay match, usa el
+        // texto tal cual (probablemente sin demanda → ruta vacía manejada abajo).
+        $rolDemanda = \App\Support\CareerCatalog::resolveRole($profile->user?->carrera, $rol) ?? $rol;
+
         // Demanda del rol: skill_id => demanda_pct
-        $demanda = RoleSkill::where('rol_objetivo', $rol)
+        $demanda = RoleSkill::where('rol_objetivo', $rolDemanda)
             ->with('skill')
             ->get();
 

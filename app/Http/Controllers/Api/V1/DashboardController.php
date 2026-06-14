@@ -24,7 +24,17 @@ class DashboardController extends Controller
     {
         $user = $request->user();
         $profile = $user->profile()->firstOrCreate([]);
-        $rol = $profile->rol_objetivo ?? 'Frontend Jr.';
+
+        // Sin meta definida → estado vacío (el front muestra CTA "Define tu meta").
+        if (! $profile->rol_objetivo) {
+            return response()->json(['data' => [
+                'sin_meta' => true,
+                'usuario'  => $user->name,
+                'score'    => $profile->empleabilidad_score,
+            ]]);
+        }
+
+        $rol = $profile->rol_objetivo;
 
         $route = $this->engine->buildRoute($profile, $rol);
         $matches = $this->matcher->search($profile, null);

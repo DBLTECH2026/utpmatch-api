@@ -21,6 +21,10 @@ class ProfileResource extends JsonResource
             'headline'            => $this->headline,
             'about'               => $this->about,
             'empleabilidad_score' => $this->empleabilidad_score,
+            'autopercepcion'      => $this->autopercepcion,
+            'intereses'           => $this->intereses,
+            'fortalezas'          => $this->fortalezas,
+            'onboarding_visto'    => (bool) $this->onboarding_visto,
             'skills'              => SkillResource::collection($this->whenLoaded('skills')),
             'updated_at'          => $this->updated_at,
         ];
