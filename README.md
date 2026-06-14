@@ -19,8 +19,9 @@ composer install
 cp .env.example .env
 php artisan key:generate
 
-# 3. Base de datos (crear BD 'utpmatch' en MySQL) y migrar
-php artisan migrate
+# 3. Crear la BD 'utpmatch' en MySQL (vacía), luego migrar + sembrar datos demo
+#    (incluye las cuentas de prueba — ver CREDENCIALES-DEMO.md)
+php artisan migrate:fresh --seed
 
 # 4. Servir
 php artisan serve     # http://localhost:8000
