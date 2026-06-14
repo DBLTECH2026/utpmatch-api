@@ -29,6 +29,12 @@ class UserResource extends JsonResource
             'rol'        => $this->rol,
             // Relaciones solo si fueron cargadas (evita N+1 y sobre-exposición).
             'profile'     => ProfileResource::make($this->whenLoaded('profile')),
+            'courses'     => $this->whenLoaded('courses', fn () => $this->courses->map(fn ($c) => [
+                'nombre' => $c->nombre,
+                'estado' => $c->estado,
+                'nota'   => $c->nota,
+                'ciclo'  => $c->ciclo,
+            ])),
             'connections' => $this->whenLoaded('connections', fn () => $this->connections->map(fn ($c) => [
                 'provider'     => $c->provider,
                 'status'       => $c->status,

@@ -75,6 +75,12 @@ class User extends Authenticatable
         return $this->hasMany(Connection::class);
     }
 
+    /** Cursos (data UTP). */
+    public function courses(): HasMany
+    {
+        return $this->hasMany(Course::class);
+    }
+
     /** Nudges del copiloto. */
     public function nudges(): HasMany
     {

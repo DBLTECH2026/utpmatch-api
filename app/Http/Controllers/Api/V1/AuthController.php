@@ -54,7 +54,7 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Autenticación exitosa.',
             'data'    => [
-                'user'  => UserResource::make($result['user']),
+                'user'  => UserResource::make($result['user']->load('profile.skills', 'courses', 'connections')),
                 'token' => $result['token'],
             ],
         ]);
@@ -71,7 +71,7 @@ class AuthController extends Controller
     /** GET /api/v1/me — usuario autenticado actual */
     public function me(Request $request): JsonResponse
     {
-        $user = $request->user()->load(['profile', 'connections']);
+        $user = $request->user()->load(['profile.skills', 'connections', 'courses']);
 
         return response()->json([
             'data' => UserResource::make($user),

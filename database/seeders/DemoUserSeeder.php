@@ -33,12 +33,29 @@ class DemoUserSeeder extends Seeder
             ]
         );
 
+        // Sin rol_objetivo a propósito: al entrar verá el módulo de Bienvenida
+        // para elegir su meta (ese es el flujo real).
         $profile = $maria->profile()->updateOrCreate([], [
-            'rol_objetivo'        => 'Frontend Jr.',
-            'headline'            => 'Estudiante UTP en ruta a Frontend',
-            'about'               => 'Base sólida en lógica, Git y bases de datos. Cerrando brechas hacia Frontend.',
+            'rol_objetivo'        => null,
+            'headline'            => 'Estudiante UTP de Ing. de Sistemas',
+            'about'               => 'Base sólida en lógica, Git y bases de datos.',
             'empleabilidad_score' => 68,
         ]);
+
+        // Cursos importados de UTP (data demo).
+        $cursos = [
+            ['Algoritmos y Estructuras de Datos', 'aprobado', 16.0, 4],
+            ['Base de Datos I', 'aprobado', 17.0, 5],
+            ['Programación Web', 'aprobado', 15.0, 6],
+            ['Ingeniería de Software', 'aprobado', 16.0, 7],
+            ['Desarrollo de Aplicaciones Web', 'en_curso', null, 8],
+        ];
+        foreach ($cursos as [$nombre, $estado, $nota, $ciclo]) {
+            $maria->courses()->updateOrCreate(
+                ['nombre' => $nombre],
+                ['estado' => $estado, 'nota' => $nota, 'ciclo' => $ciclo]
+            );
+        }
 
         // Skills que "ya tiene" (origen UTP/GitHub, verificadas).
         $base = ['Python' => 'utp', 'Git' => 'github', 'SQL' => 'utp', 'HTML/CSS' => 'utp', 'Lógica de programación' => 'utp'];
