@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/** AdvisorSession — Solicitud de sesión con un asesor. */
+/** AdvisorSession — Solicitud / sesión de asesoría. */
 class AdvisorSession extends Model
 {
-    protected $fillable = ['user_id', 'advisor_id', 'estado', 'fecha'];
+    protected $fillable = ['user_id', 'advisor_id', 'estado', 'fecha', 'notas', 'zoom_link'];
 
     protected function casts(): array
     {

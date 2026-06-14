@@ -67,9 +67,18 @@ Route::prefix('v1')->group(function () {
         Route::post('match/search',        [MatchController::class, 'search']);
         Route::get('match/{vacancy}',      [MatchController::class, 'detail']);
 
-        // Asesores
+        // Asesores (alumno)
         Route::get('advisors',          [AdvisorController::class, 'index']);
         Route::post('advisor-sessions', [AdvisorController::class, 'requestSession']);
+        Route::get('my-sessions',       [AdvisorController::class, 'mySessions']);
+
+        // Panel del asesor (role:asesor)
+        Route::middleware('role:asesor')->prefix('advisor')->group(function () {
+            Route::get('dashboard',                         [AdvisorController::class, 'dashboard']);
+            Route::get('reservas',                          [AdvisorController::class, 'reservas']);
+            Route::put('sessions/{session}/schedule',       [AdvisorController::class, 'schedule']);
+            Route::put('sessions/{session}/status',         [AdvisorController::class, 'updateStatus']);
+        });
 
         // Copiloto
         Route::get('copilot/nudges', [CopilotController::class, 'nudges']);

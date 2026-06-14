@@ -98,13 +98,42 @@ class CatalogSeeder extends Seeder
     private function seedAdvisors(): void
     {
         $advisors = [
-            ['Jorge Ramos', 'Entrevistas técnicas', 'Culqi', 4.9],
-            ['María Paz', 'CV y marca personal', 'Yape', 4.8],
-            ['Luis Andrade', 'Primeros pasos', 'Coach de carrera', 5.0],
-            ['Carla Núñez', 'Carrera en consultoría', 'EY Perú', 4.7],
+            [
+                'nombre'       => 'Jaime Madrid',
+                'especialidad' => 'Entrevistas técnicas · Ciberseguridad',
+                'empresa'      => 'BanBif',
+                'rating'       => 4.9,
+                'bio'          => 'Ingeniero de Sistemas por la UNFV y MBA Gerencial por CENTRUM PUCP. Más de 15 años de experiencia en banca digital y seguridad de sistemas. Actualmente lidera proyectos de transformación digital en BanBif, donde fue reconocido con el Premio al Desempeño Excepcional (top 3% de la empresa). Apasionado por preparar a la próxima generación de ingenieros para el mercado laboral tech.',
+                'linkedin_url' => 'https://www.linkedin.com/in/jaime-madrid-780671106/',
+            ],
+            [
+                'nombre'       => 'María Paz',
+                'especialidad' => 'CV y marca personal',
+                'empresa'      => 'Yape',
+                'rating'       => 4.8,
+                'bio'          => 'Especialista en marca personal y empleabilidad con más de 8 años ayudando a jóvenes profesionales a destacar en el mercado laboral. Trabaja en Yape donde lidera iniciativas de talento y cultura.',
+                'linkedin_url' => null,
+            ],
+            [
+                'nombre'       => 'Luis Andrade',
+                'especialidad' => 'Primeros pasos · Coach de carrera',
+                'empresa'      => 'Coach de carrera',
+                'rating'       => 5.0,
+                'bio'          => 'Coach certificado con más de 10 años acompañando a estudiantes universitarios en su transición al mundo profesional. Especializado en autoconocimiento, definición de objetivos de carrera y preparación para primeras entrevistas.',
+                'linkedin_url' => null,
+            ],
+            [
+                'nombre'       => 'Carla Núñez',
+                'especialidad' => 'Carrera en consultoría',
+                'empresa'      => 'EY Perú',
+                'rating'       => 4.7,
+                'bio'          => 'Senior Manager en EY Perú con especialización en consultoría de negocios y transformación organizacional. Mentora activa de practicantes y jóvenes profesionales que buscan ingresar a las Big Four.',
+                'linkedin_url' => null,
+            ],
         ];
-        foreach ($advisors as [$n, $esp, $emp, $rat]) {
-            Advisor::updateOrCreate(['nombre' => $n], ['especialidad' => $esp, 'empresa' => $emp, 'rating' => $rat]);
+
+        foreach ($advisors as $data) {
+            Advisor::updateOrCreate(['nombre' => $data['nombre']], $data);
         }
     }
 }
