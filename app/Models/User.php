@@ -75,6 +75,18 @@ class User extends Authenticatable
         return $this->hasMany(Connection::class);
     }
 
+    /** Nudges del copiloto. */
+    public function nudges(): HasMany
+    {
+        return $this->hasMany(CopilotNudge::class);
+    }
+
+    /** Sesiones con asesores. */
+    public function advisorSessions(): HasMany
+    {
+        return $this->hasMany(AdvisorSession::class);
+    }
+
     // ---------------------------------------------------------------------
     // Helpers de dominio
     // ---------------------------------------------------------------------

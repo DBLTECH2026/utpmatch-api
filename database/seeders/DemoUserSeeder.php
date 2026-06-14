@@ -51,6 +51,12 @@ class DemoUserSeeder extends Seeder
         }
         $profile->skills()->sync($sync);
 
+        // Nudge proactivo del copiloto (demo).
+        $maria->nudges()->updateOrCreate(
+            ['mensaje' => 'Te falta 1 curso para calificar a 3 vacantes nuevas de Frontend. ¿Te armo la ruta?'],
+            ['tipo' => 'sugerencia', 'cta_label' => 'Armar mi ruta', 'cta_route' => '/dashboard/ruta', 'leido' => false]
+        );
+
         // --- Asesor y Admin (para demostrar RBAC) ---
         User::updateOrCreate(
             ['email' => 'asesor@utp.edu.pe'],

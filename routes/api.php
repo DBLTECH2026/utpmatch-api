@@ -1,7 +1,13 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AdvisorController;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\CopilotController;
+use App\Http\Controllers\Api\V1\CvController;
+use App\Http\Controllers\Api\V1\DashboardController;
+use App\Http\Controllers\Api\V1\MatchController;
 use App\Http\Controllers\Api\V1\ProfileController;
+use App\Http\Controllers\Api\V1\RouteController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -36,7 +42,29 @@ Route::prefix('v1')->group(function () {
         Route::get('profile',  [ProfileController::class, 'show']);
         Route::put('profile',  [ProfileController::class, 'update']);
 
-        // Ejemplo de ruta solo-admin (RBAC) — placeholder para crecer:
-        // Route::get('admin/usuarios', [...])->middleware('role:admin');
+        // Dashboard (resumen del viaje)
+        Route::get('dashboard', [DashboardController::class, 'index']);
+
+        // Ruta & Brechas
+        Route::get('route',        [RouteController::class, 'show']);
+        Route::put('route/target', [RouteController::class, 'setTarget']);
+        Route::get('gaps',         [RouteController::class, 'gaps']);
+
+        // CV Inteligente
+        Route::post('cv',          [CvController::class, 'generate']);
+        Route::get('cv/{cv}',      [CvController::class, 'show']);
+        Route::get('cv/{cv}/ats',  [CvController::class, 'ats']);
+
+        // Empleos & Match
+        Route::post('match/search',        [MatchController::class, 'search']);
+        Route::get('match/{vacancy}',      [MatchController::class, 'detail']);
+
+        // Asesores
+        Route::get('advisors',          [AdvisorController::class, 'index']);
+        Route::post('advisor-sessions', [AdvisorController::class, 'requestSession']);
+
+        // Copiloto
+        Route::get('copilot/nudges', [CopilotController::class, 'nudges']);
+        Route::post('copilot/chat',  [CopilotController::class, 'chat']);
     });
 });
