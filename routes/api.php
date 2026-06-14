@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\AdvisorController;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\CareerController;
 use App\Http\Controllers\Api\V1\CopilotController;
 use App\Http\Controllers\Api\V1\CvController;
 use App\Http\Controllers\Api\V1\DashboardController;
@@ -24,6 +25,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::prefix('v1')->group(function () {
+
+    // ---- Catálogo público (carreras → roles) ----
+    Route::get('careers', [CareerController::class, 'index']);
 
     // ---- Rutas públicas (con rate limit estricto) ----
     Route::middleware('throttle:auth')->prefix('auth')->group(function () {

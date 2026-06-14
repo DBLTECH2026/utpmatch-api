@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Support\CareerCatalog;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 /**
@@ -33,7 +35,8 @@ class RegisterRequest extends FormRequest
                 Password::min(8)->mixedCase()->numbers()->symbols()->uncompromised(),
             ],
             'codigo_utp' => ['nullable', 'string', 'max:20', 'unique:users,codigo_utp'],
-            'carrera'    => ['nullable', 'string', 'max:120'],
+            // Carrera obligatoria y restringida al catálogo cerrado (define los roles del match).
+            'carrera'    => ['required', 'string', Rule::in(CareerCatalog::carreras())],
             'ciclo'      => ['nullable', 'integer', 'between:1,12'],
         ];
     }

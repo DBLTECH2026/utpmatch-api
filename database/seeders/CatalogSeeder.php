@@ -7,65 +7,80 @@ use App\Models\RoleSkill;
 use App\Models\Skill;
 use App\Models\Taller;
 use App\Models\Vacancy;
+use App\Support\CareerCatalog;
 use Illuminate\Database\Seeder;
 
 /**
- * CatalogSeeder — Datos demo del dominio (role_skills, talleres, vacantes, asesores).
- * Idempotente. Se ejecuta después de SkillSeeder.
+ * CatalogSeeder — Siembra el dominio del match a partir de CareerCatalog.
+ *
+ * Para cada carrera → rol → skills:
+ *  - crea la skill si no existe (clasifica técnica/blanda por heurística),
+ *  - registra role_skills (demanda por rol),
+ *  - genera un taller UTP para cada skill (cierra la brecha).
+ * Además: vacantes demo (con skills) y asesores.
+ *
+ * Idempotente.
  */
 class CatalogSeeder extends Seeder
 {
+    /** Palabras que delatan una soft skill. */
+    private array $blandas = [
+        'Trabajo en equipo', 'Liderazgo', 'Comunicación', 'Negociación',
+        'Resolución de problemas', 'Atención al detalle', 'Storytelling de datos',
+    ];
+
     public function run(): void
     {
-        $skill = fn (string $n) => Skill::where('nombre', $n)->value('id');
+        // 1) Skills + role_skills desde el catálogo.
+        foreach (CareerCatalog::CARRERAS as $roles) {
+            foreach ($roles as $rol => $skills) {
+                foreach ($skills as $nombre => $demanda) {
+                    $skill = Skill::firstOrCreate(
+                        ['nombre' => $nombre],
+                        ['categoria' => in_array($nombre, $this->blandas, true) ? 'blanda' : 'tecnica']
+                    );
 
-        // --- Demanda por rol (gap engine) ---
-        $demanda = [
-            'Frontend Jr.' => [
-                'React' => 88, 'TypeScript' => 72, 'CSS avanzado' => 65, 'HTML/CSS' => 60,
-                'JavaScript' => 80, 'Git' => 55, 'Trabajo en equipo' => 50,
-            ],
-            'Backend Jr.' => [
-                'PHP' => 78, 'Laravel' => 75, 'SQL' => 80, 'Git' => 60, 'Python' => 50, 'Testing' => 55,
-            ],
-        ];
-        foreach ($demanda as $rol => $skills) {
-            foreach ($skills as $nombre => $pct) {
-                if ($id = $skill($nombre)) {
                     RoleSkill::updateOrCreate(
-                        ['rol_objetivo' => $rol, 'skill_id' => $id],
-                        ['demanda_pct' => $pct]
+                        ['rol_objetivo' => $rol, 'skill_id' => $skill->id],
+                        ['demanda_pct' => $demanda]
+                    );
+
+                    // Taller UTP para skills técnicas (las blandas tienen sus propios talleres).
+                    Taller::firstOrCreate(
+                        ['nombre' => "Taller UTP: {$nombre}"],
+                        ['area' => 'UTP', 'skill_id' => $skill->id]
                     );
                 }
             }
         }
 
-        // --- Talleres UTP que cierran skills ---
-        $talleres = [
-            ['React desde cero', 'Frontend', 'React'],
-            ['TypeScript para React', 'Frontend', 'TypeScript'],
-            ['Flexbox & Grid', 'Frontend', 'CSS avanzado'],
-            ['Taller de Oratoria', 'Soft skills', 'Comunicación'],
-            ['Inglés técnico UTP', 'Idiomas', 'Inglés técnico'],
-            ['Liderazgo y equipos', 'Soft skills', 'Liderazgo'],
-            ['Laravel práctico', 'Backend', 'Laravel'],
-        ];
-        foreach ($talleres as [$nombre, $area, $skillNombre]) {
-            Taller::updateOrCreate(
-                ['nombre' => $nombre],
-                ['area' => $area, 'skill_id' => $skill($skillNombre)]
-            );
-        }
+        // 2) Vacantes demo con skills (una por algunos roles representativos).
+        $this->seedVacancies();
 
-        // --- Vacantes demo + sus skills requeridas ---
+        // 3) Asesores.
+        $this->seedAdvisors();
+    }
+
+    private function seedVacancies(): void
+    {
+        $skillId = fn (string $n) => Skill::where('nombre', $n)->value('id');
+
         $vacantes = [
+            // [titulo, empresa, ubic, modalidad, rol, salario, [skill=>dem]]
             ['Practicante Frontend', 'Culqi', 'Lima', 'Remoto', 'Frontend Jr.', 'S/ 1,200',
              ['HTML/CSS' => 60, 'JavaScript' => 70, 'Git' => 50, 'React' => 88, 'CSS avanzado' => 60, 'Trabajo en equipo' => 50]],
             ['Dev Junior PHP/Laravel', 'Crehana', 'Lima', 'Híbrido', 'Backend Jr.', 'S/ 1,800',
-             ['PHP' => 80, 'Laravel' => 75, 'SQL' => 70, 'Git' => 55, 'Testing' => 50]],
-            ['QA Trainee', 'Yape', 'Lima', 'Presencial', 'Backend Jr.', 'S/ 1,000',
-             ['Testing' => 80, 'Cypress' => 70, 'Selenium' => 60, 'Lógica de programación' => 50]],
+             ['PHP' => 80, 'Laravel' => 75, 'SQL' => 70, 'Git' => 55, 'Testing' => 50, 'APIs REST' => 70]],
+            ['Analista de Procesos Jr.', 'Alicorp', 'Lima', 'Presencial', 'Analista de Procesos', 'S/ 2,000',
+             ['Mejora de procesos' => 85, 'Lean Manufacturing' => 70, 'Excel avanzado' => 75, 'Resolución de problemas' => 60]],
+            ['Asistente Legal Corporativo', 'Estudio Rodrigo', 'Lima', 'Presencial', 'Asistente Legal', 'S/ 1,600',
+             ['Redacción jurídica' => 80, 'Investigación legal' => 75, 'Derecho civil' => 70, 'Atención al detalle' => 70]],
+            ['Asistente Contable', 'PwC Perú', 'Lima', 'Híbrido', 'Asistente Contable', 'S/ 1,700',
+             ['Registro contable' => 85, 'Tributación' => 70, 'Excel avanzado' => 75, 'Conciliaciones' => 65]],
+            ['Analista Tributario Jr.', 'EY Perú', 'Lima', 'Híbrido', 'Analista Tributario', 'S/ 2,200',
+             ['Tributación' => 88, 'Normativa SUNAT' => 80, 'Declaraciones juradas' => 75, 'Excel avanzado' => 70]],
         ];
+
         foreach ($vacantes as [$titulo, $empresa, $ubic, $modal, $rol, $sal, $skills]) {
             $vac = Vacancy::updateOrCreate(
                 ['titulo' => $titulo, 'empresa' => $empresa],
@@ -74,16 +89,19 @@ class CatalogSeeder extends Seeder
             );
             $sync = [];
             foreach ($skills as $nombre => $pct) {
-                if ($id = $skill($nombre)) $sync[$id] = ['demanda_pct' => $pct];
+                if ($id = $skillId($nombre)) $sync[$id] = ['demanda_pct' => $pct];
             }
             $vac->skills()->sync($sync);
         }
+    }
 
-        // --- Asesores ---
+    private function seedAdvisors(): void
+    {
         $advisors = [
             ['Jorge Ramos', 'Entrevistas técnicas', 'Culqi', 4.9],
             ['María Paz', 'CV y marca personal', 'Yape', 4.8],
             ['Luis Andrade', 'Primeros pasos', 'Coach de carrera', 5.0],
+            ['Carla Núñez', 'Carrera en consultoría', 'EY Perú', 4.7],
         ];
         foreach ($advisors as [$n, $esp, $emp, $rat]) {
             Advisor::updateOrCreate(['nombre' => $n], ['especialidad' => $esp, 'empresa' => $emp, 'rating' => $rat]);
