@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             SkillSeeder::class,
             CatalogSeeder::class,
             DemoUserSeeder::class,
+            CareerDemoUsersSeeder::class,
         ]);
     }
 }
